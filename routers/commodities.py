@@ -56,46 +56,62 @@ async def add_chemical_to_commodity(commodity_id: int, chemical: schemas.Chemica
     unknown_rel = find_chem(db_chems, unknown['id'])
     if unknown_rel is None:
         raise HTTPException(status_code=400, detail="unable to add chemical; please remove a chemical to add a new one")
+    elif unknown['id'] == chemical.chemical_id:
+        raise HTTPException(status_code=400, detail="unknown element cannot be added")
 
     chemical_rel = find_chem(db_chems, chemical.chemical_id)
 
     if chemical.percentage <= unknown_rel['percentage']:
         
         if chemical_rel:
-            new_chem_per = chemical_rel['percentage'] + chemical.percentage
+            chemical_rel['percentage'] = chemical_rel['percentage'] + chemical.percentage
         else:
-            new_chem_per = chemical.percentage
+            chemical_rel = {**unknown_rel}
+            chemical_rel['chemical_id'] = chemical.chemical_id
+            chemical_rel['id'] = None
+            chemical_rel['percentage'] = chemical.percentage
         
         new_unk_per = unknown_rel['percentage'] - chemical.percentage
-        unknown_rel['percentage'], chemical_rel['percentage'] = new_unk_per, new_chem_per
+        unknown_rel['percentage'] = new_unk_per
 
         up_chem = await crud.update_comm_chemical(chemical_rel, unknown_rel)
     else:
         raise HTTPException(status_code=400, detail="unable to add chemical; please remove a chemical to add a new one")
     
-    if new_unk_per == 0:
-        db_chems = list(filter(lambda x: x['percentage'] != 0, db_chems))
+    db_chems = await crud.get_comm_chemicals_formatted(commodity_id)
 
     return {**db_comm, "chemical_composition":db_chems}
 
 @router.delete("/delete_chemical")
 async def delete_chemical_from_commodity(commodity_id: int, chemical_id: int):
 
-    db_chem = await crud.get_chemical(chemical_id)
-    if db_chem is None:
-        raise HTTPException(status_code=400, detail="chemical doesn't exist")
-    
     db_comm = await crud.get_commodity(commodity_id)
     if db_comm is None:
         raise HTTPException(status_code=400, detail="commodity doesn't exist")
 
     db_chems = await crud.get_comm_chemicals(commodity_id)
+    if list(filter(lambda x: x['chemical_id'] == chemical_id, db_chems)) == []:
+        raise HTTPException(status_code=400, detail="element doesn't exist in commodity")
 
     unknown = await crud.get_by_chemical_name('unknown')
-    chemical = find_chem(db_chems)
-    del_chem = await crud.delete_comm_chemical(commodity_id, chemical_id)
+    if chemical_id == unknown['id']:
+        raise HTTPException(status_code=400, detail="unknown element cannot be removed")
+
+    unknown_rel = find_chem(db_chems, unknown['id'])
+    chemical_rel = find_chem(db_chems, chemical_id)
     
-    if del_chem:
-        pass
+    if unknown_rel is None:
+        unknown_rel = {**chemical_rel}
+        unknown_rel['chemical_id'] = unknown['id']
+        unknown_rel['id'] = None
+        unknown_rel['percentage'] = chemical_rel['percentage']
     else:
-        return HTTPException(status_code=400, detail="this chemical is not in the commodity")
+        unknown_rel['percentage']= (unknown_rel['percentage']+chemical_rel['percentage'])
+    
+    chemical_rel['percentage'] = 0
+    
+    up_chem = await crud.update_comm_chemical(chemical_rel, unknown_rel)
+
+    db_chems = await crud.get_comm_chemicals_formatted(commodity_id)
+    
+    return {**db_comm, "chemical_composition":db_chems}
