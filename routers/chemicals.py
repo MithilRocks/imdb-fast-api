@@ -11,6 +11,11 @@ async def create_chemical(chemical: schemas.ChemicalCreate):
         raise HTTPException(status_code=400, detail="chemical already created")
     return await crud.create_chemical(chemical=chemical)
 
+# Get all chemicals
+@router.get("/all", response_model=List[schemas.Chemical])
+async def get_chemicals():
+    return await crud.get_chemicals()
+
 # Get all chemicals by id
 @router.get("/{chemical_id}", response_model=schemas.Chemical)
 async def read_chemical(chemical_id: int):
@@ -18,8 +23,3 @@ async def read_chemical(chemical_id: int):
     if db_chem is None:
         raise HTTPException(status_code=400, detail="chemical not existing")
     return db_chem
-
-# Get all chemicals
-@router.get("/all", response_model=List[schemas.Chemical])
-async def get_chemicals():
-    return await crud.get_chemicals()

@@ -1,4 +1,4 @@
-# import uvicorn
+import uvicorn
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -33,5 +33,5 @@ app.include_router(
     responses={404: {"description":"api not found"}}
 )
     
-""" if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, debug=True) """
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
