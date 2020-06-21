@@ -26,7 +26,7 @@ async def get_comm_chemicals(commodity_id: int):
         final_chemicals.append(dict(chemical))
     return final_chemicals
 
-""" async def get_comm_chemicals(commodity_id: int):
+async def get_comm_chemicals_formatted(commodity_id: int):
     async def chemical_composition(chemicals: models.ChemicalCommodityRelation):
         for chemical in chemicals:
             chem = await get_chemical(chemical.chemical_id)
@@ -36,7 +36,7 @@ async def get_comm_chemicals(commodity_id: int):
     comm_chem = await database.fetch_all(query=models.relationships.select().where(models.relationships.c.commodity_id == commodity_id))
     async for i in chemical_composition(comm_chem):
         chem_comp.append(i)
-    return chem_comp """
+    return chem_comp
 
 async def get_comm_chemical(commodity_id: int, chemical_id: int):
     return await database.fetch_one(query=models.relationships.select().where((models.relationships.c.commodity_id == commodity_id) & (models.relationships.c.chemical_id == chemical_id)))
@@ -59,8 +59,11 @@ async def add_chemical(commodity_id: int, chemical: schemas.ChemicalCommodityRel
     return {"commodity_id":commodity_id, **chemical.dict(), "id":pk}
 
 async def update_comm_chemical(chem_vals, unk_vals):
-    query = "INSERT INTO chemicalcommodityrelation (id, chemical_id, commodity_id, percentage) VALUES (:id, :chemical_id, :commodity_id, :percentage) \
-        ON duplicate KEY UPDATE percentage=VALUES(percentage)"
+    query = "START TRANSACTION; \
+        INSERT INTO chemicalcommodityrelation (id, chemical_id, commodity_id, percentage) VALUES (:id, :chemical_id, :commodity_id, :percentage) \
+        ON duplicate KEY UPDATE percentage=VALUES(percentage); \
+        DELETE FROM chemicalcommodityrelation WHERE percentage = 0;\
+        COMMIT;"
     values = [chem_vals, unk_vals]
     return await database.execute_many(query=query, values=values)
 
