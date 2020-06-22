@@ -24,4 +24,4 @@ As per the project requirements, the application requires authentication before 
 
 **The application is ready to test!**
 
-*Note*: Use preexisting **commodity id 15** to get started with the testing of the application. 
+*Note*: Use preexisting **commodity id 15** to get started with the testing of the application right away. 
