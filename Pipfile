@@ -12,6 +12,7 @@ sqlalchemy = "*"
 mysqlclient = "*"
 databases = "*"
 aiomysql = "*"
+jwt = "*"
 
 [requires]
 python_version = "3.7"
