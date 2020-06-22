@@ -1,5 +1,5 @@
-from typing import List, Optional
-from pydantic import BaseModel, validator
+from typing import List, Optional, Dict
+from pydantic import BaseModel, validator, Field
 
 class ElementBase(BaseModel):
     name: str
@@ -36,6 +36,29 @@ class ElementCommodityRel(BaseModel):
         if v <= 0:
             raise ValueError(f'percentage should be greater than 0')
         return v
+
+    class Config:
+        orm_mode = True
+
+class CompositionElement(BaseModel):
+    element: Element
+    percentage: float
+
+    class Config:
+        orm_mode = True
+
+class CommodityResponse(Commodity):
+    chemical_composition: List[CompositionElement]
+
+    class Config:
+        orm_mode = True
+
+class DeleteElement(BaseModel):
+    commodity_id: int
+    element_id: int
+
+class AddElement(BaseModel):
+    percentage: float
 
     class Config:
         orm_mode = True
