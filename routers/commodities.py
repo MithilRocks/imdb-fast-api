@@ -9,8 +9,12 @@ def find_chem(chems, id):
         if chem['element_id'] == id:
             return chem
 
+# get commodity by id
 @router.get("/{id}", tags=['Main Task Endpoints'], response_model=schemas.CommodityResponse)
 async def get_commodity(id: int):
+    """
+    Get Commodity by Id
+    """
     db_comm = await crud.get_commodity(id)
     if db_comm is None:
         raise HTTPException(status_code=400, detail="commodity not found")
@@ -20,6 +24,9 @@ async def get_commodity(id: int):
 # Create a commodity
 @router.post("/", response_model=schemas.CommodityResponse, tags=['Creation Endpoints'])
 async def create_commodity(commodity: schemas.CommodityCreate):
+    """
+    Create a commodity
+    """
     db_comm = await crud.get_by_commodity_name(commodity.name)
     if db_comm:
         raise HTTPException(status_code=400, detail="commodity already exists")
@@ -34,6 +41,9 @@ async def create_commodity(commodity: schemas.CommodityCreate):
 
 @router.put("/", tags=['Main Task Endpoints'], response_model=schemas.Commodity, response_model_exclude_unset=True)
 async def update_commodity(commodity: schemas.Commodity):
+    """
+    Use preexisting ***commodity id 15*** to get started right away
+    """
     db_com = await crud.get_commodity(commodity.id)
     if db_com is None:
         raise HTTPException(status_code=400, detail="commodity not found")
@@ -41,7 +51,32 @@ async def update_commodity(commodity: schemas.Commodity):
 
 @router.post("/add_element", tags=['Main Task Endpoints'], response_model=schemas.CommodityResponse)
 async def add_element_to_commodity(add_element: schemas.AddElement):
-
+    """
+    Available elements:
+    ***[
+        {
+            "name": "Al",
+            "id": 6
+        },
+        {
+            "name": "C",
+            "id": 3
+        },
+        {
+            "name": "N",
+            "id": 4
+        },
+        {
+            "name": "O",
+            "id": 5
+        },
+        {
+            "name": "unknown",
+            "id": 7
+        }
+    ]***. 
+    Available ***commodity id is 15***
+    """
     db_chem = await crud.get_element(add_element.element_id)
     if db_chem is None:
         raise HTTPException(status_code=400, detail="element doesn't exist")
@@ -84,7 +119,32 @@ async def add_element_to_commodity(add_element: schemas.AddElement):
 
 @router.delete("/delete_element", tags=['Main Task Endpoints'], response_model=schemas.CommodityResponse)
 async def delete_element_from_commodity(delete_elem: schemas.DeleteElement):
-
+    """
+    Available elements:
+    ***[
+        {
+            "name": "Al",
+            "id": 6
+        },
+        {
+            "name": "C",
+            "id": 3
+        },
+        {
+            "name": "N",
+            "id": 4
+        },
+        {
+            "name": "O",
+            "id": 5
+        },
+        {
+            "name": "unknown",
+            "id": 7
+        }
+    ]***. 
+    Available ***commodity id is 15***
+    """
     db_comm = await crud.get_commodity(delete_elem.commodity_id)
     if db_comm is None:
         raise HTTPException(status_code=400, detail="commodity doesn't exist")

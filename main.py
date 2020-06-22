@@ -25,9 +25,11 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
+# sample hashing
 def fake_hash_password(password: str):
     return "hashed" + password
 
+# user authentication
 async def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     user = await crud.get_user(credentials.username)
     correct_username = secrets.compare_digest(credentials.username, user.username)
@@ -40,6 +42,7 @@ async def get_current_username(credentials: HTTPBasicCredentials = Depends(secur
         )
     return credentials.username
 
+# including elements router
 app.include_router(
     elements.router,
     prefix="/element",
@@ -47,6 +50,7 @@ app.include_router(
     dependencies=[Depends(get_current_username)]
 )
 
+# including commodities router
 app.include_router(
     commodities.router,
     prefix="/commodity",

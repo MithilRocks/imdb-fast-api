@@ -32,6 +32,7 @@ class User(Base):
     username = Column(String(255), unique = True)
     password = Column(String(255))
 
+# model objects to be used in database queries
 elements = Element.__table__
 commodities = Commodity.__table__
 relationships = ElementCommodityRelation.__table__
