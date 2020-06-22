@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 from database import database
 import models, schemas
 
+async def get_user(username: str):
+    return await database.fetch_one(query=models.users.select().where(models.users.c.username == username))
+    
 async def get_by_chemical_name(name: str):
     return await database.fetch_one(query=models.chemicals.select().where(models.chemicals.c.name == name))
 

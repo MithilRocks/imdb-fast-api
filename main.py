@@ -26,9 +26,13 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "stanleyjobson")
-    correct_password = secrets.compare_digest(credentials.password, "swordfish")
+def fake_hash_password(password: str):
+    return "hashed" + password
+
+async def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    user = await crud.get_user(credentials.username)
+    correct_username = secrets.compare_digest(credentials.username, user.username)
+    correct_password = secrets.compare_digest(fake_hash_password(credentials.password), user.password)
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

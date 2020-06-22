@@ -25,7 +25,15 @@ class ChemicalCommodityRelation(Base):
     commodity_id = Column(Integer, ForeignKey("commodities.id"))
     percentage = Column(Float)
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key = True, index = True)
+    username = Column(String(255), unique = True)
+    password = Column(String(255))
+
 chemicals = Chemical.__table__
 commodities = Commodity.__table__
 relationships = ChemicalCommodityRelation.__table__
+users = User.__table__
     
