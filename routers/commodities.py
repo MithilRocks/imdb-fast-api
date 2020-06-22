@@ -18,7 +18,7 @@ async def get_commodity(id: int):
     return {**db_comm, "chemical_composition":db_chem}
 
 # Create a commodity
-@router.post("/", response_model=schemas.CommodityResponse)
+@router.post("/", response_model=schemas.CommodityResponse, tags=['Creation Endpoints'])
 async def create_commodity(commodity: schemas.CommodityCreate):
     db_comm = await crud.get_by_commodity_name(commodity.name)
     if db_comm:
@@ -32,7 +32,7 @@ async def create_commodity(commodity: schemas.CommodityCreate):
     await crud.add_element(commodity_id=add_comm['id'], element=schemas.ElementCommodityRel(element_id=db_chem['id'],percentage=100))
     return {**add_comm, "chemical_composition":[{"element":db_chem, "percentage":100}]}
 
-@router.put("/", tags=['Main Task Endpoints'], response_model=schemas.Commodity)
+@router.put("/", tags=['Main Task Endpoints'], response_model=schemas.Commodity, response_model_exclude_unset=True)
 async def update_commodity(commodity: schemas.Commodity):
     db_com = await crud.get_commodity(commodity.id)
     if db_com is None:

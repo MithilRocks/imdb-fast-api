@@ -4,7 +4,7 @@ from typing import List
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.Element)
+@router.post("/", response_model=schemas.Element, tags=['Creation Endpoints'])
 async def create_element(element: schemas.ElementCreate):
     db_chem = await crud.get_by_element_name(element.name)
     if db_chem:
@@ -16,10 +16,3 @@ async def create_element(element: schemas.ElementCreate):
 async def get_elements():
     return await crud.get_elements()
 
-# Get all elements by id
-@router.get("/{element_id}", response_model=schemas.Element)
-async def read_element(element_id: int):
-    db_chem = await crud.get_element(element_id)
-    if db_chem is None:
-        raise HTTPException(status_code=400, detail="element not existing")
-    return db_chem

@@ -14,7 +14,7 @@ class Element(ElementBase):
         orm_mode = True
 
 class CommodityBase(BaseModel):
-    name: str
+    name: Optional[str] = None
     price: Optional[float] = None
     inventory: Optional[float] = None
 
@@ -57,7 +57,7 @@ class DeleteElement(BaseModel):
     commodity_id: int
     element_id: int
 
-class AddElement(BaseModel):
+class AddElement(DeleteElement):
     percentage: float
 
     class Config:
