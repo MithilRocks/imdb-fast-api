@@ -23,3 +23,5 @@ Finally visit `http://127.0.0.1:8000/docs`
 As per the project requirements, the application requires authentication before accessing the endpoints. Click the green Authorize button on top right and enter username `user` and password `password`.
 
 **The application is ready to test!**
+
+*Note*: Use preexisting **commodity id 15** to get started with the testing of the application. 
