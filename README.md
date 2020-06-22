@@ -22,4 +22,4 @@ Finally visit `http://127.0.0.1:8000/docs`
 ### Step 4: Authentication
 As per the project requirements, the application requires authentication before accessing the endpoints. Click the green Authorize button on top right and enter username `user` and password `password`.
 
-**The application is now ready!**
+**The application is ready to test!**
