@@ -8,7 +8,7 @@ Change directory to `commodities` folder.
 
 Run the command `pipenv shell` to run virtual environment. Wait for a few minutes for the virtual environment to finish the setup.
 
-[(If pipenv not available, install it using `pip install pipenv`)](https://pypi.org/project/pipenv/)
+[If pipenv not available, install it using `pip install pipenv`](https://pypi.org/project/pipenv/)
 
 Next, run the command `pipenv sync` to install all the dependencies. Give it another minute. 
 
