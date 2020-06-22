@@ -1,13 +1,13 @@
 from typing import List, Optional
 from pydantic import BaseModel, validator
 
-class ChemicalBase(BaseModel):
+class ElementBase(BaseModel):
     name: str
 
-class ChemicalCreate(ChemicalBase):
+class ElementCreate(ElementBase):
     pass
 
-class Chemical(ChemicalBase):
+class Element(ElementBase):
     id: int
 
     class Config:
@@ -27,8 +27,8 @@ class Commodity(CommodityBase):
     class Config:
         orm_mode = True
 
-class ChemicalCommodityRel(BaseModel):
-    chemical_id: int
+class ElementCommodityRel(BaseModel):
+    element_id: int
     percentage: float
 
     @validator('percentage')

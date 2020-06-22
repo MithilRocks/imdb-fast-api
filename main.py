@@ -1,4 +1,3 @@
-import uvicorn
 from typing import List
 import secrets
 
@@ -10,7 +9,7 @@ from sqlalchemy.orm import Session
 import crud, schemas, models
 from database import SessionLocal, engine, database
 
-from routers import chemicals, commodities
+from routers import elements, commodities
 
 models.Base.metadata.create_all(engine)
 
@@ -42,8 +41,8 @@ async def get_current_username(credentials: HTTPBasicCredentials = Depends(secur
     return credentials.username
 
 app.include_router(
-    chemicals.router,
-    prefix="/chemical",
+    elements.router,
+    prefix="/element",
     responses={404: {"description":"api not found"}},
     dependencies=[Depends(get_current_username)]
 )
@@ -54,6 +53,3 @@ app.include_router(
     responses={404: {"description":"api not found"}},
     dependencies=[Depends(get_current_username)]
 )
-    
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
