@@ -9,10 +9,12 @@ verify_ssl = true
 fastapi = "*"
 uvicorn = "*"
 sqlalchemy = "*"
-mysqlclient = "*"
 databases = "*"
 aiomysql = "*"
 jwt = "*"
+mysqlclient = "*"
+psycopg2 = "*"
+asyncpg = "*"
 
 [requires]
 python_version = "3.7"

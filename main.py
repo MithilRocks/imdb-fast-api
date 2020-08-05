@@ -9,8 +9,6 @@ from sqlalchemy.orm import Session
 import crud, schemas, models
 from database import SessionLocal, engine, database
 
-from routers import elements, commodities
-
 models.Base.metadata.create_all(engine)
 
 app = FastAPI()
@@ -25,6 +23,21 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
+@app.get("/movie/{movie_id}", response_model=schemas.Movie)
+async def read_movie(movie_id: int):
+    db_movie = await crud.get_movie(id=movie_id)
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return db_movie
+
+@app.post("/movies/")
+async def create_movie(movie: schemas.MovieCreate):
+    db_movie = await crud.get_movie_by_name(name=movie.name)
+    if db_movie:
+        raise HTTPException(status_code=400, detail="Movie already exists")
+    return await crud.create_movie(movie=movie)
+
+""" 
 # sample hashing
 def fake_hash_password(password: str):
     return "hashed" + password
@@ -56,4 +69,4 @@ app.include_router(
     prefix="/commodity",
     responses={404: {"description":"api not found"}},
     dependencies=[Depends(get_current_username)]
-)
+) """
