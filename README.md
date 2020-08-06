@@ -1,10 +1,10 @@
-# Elements and Commodities Project
+# IMDB Project
 
 ### Step 1: Clone repo
-Open command prompt. Clone this repository in the location of your choice using `git clone https://github.com/MithilRocks/commodities.git`
+Open command prompt. Clone this repository in the location of your choice using `git clone https://github.com/MithilRocks/imdb-fast-api.git`
 
 ### Step 2: Setup and installation 
-Change directory to `commodities` folder.
+Change directory to `imdb-fast-api` folder.
 
 Run the command `pipenv shell` to run virtual environment. Wait for a few minutes for the virtual environment to finish the setup.
 
@@ -20,8 +20,7 @@ Run the command: `uvicorn main:app --reload`
 Finally visit `http://127.0.0.1:8000/docs`
 
 ### Step 4: Authentication
-As per the project requirements, the application requires authentication before accessing the endpoints. Click the green Authorize button on top right and enter username `user` and password `password`.
+As per the project requirements, the application requires authentication before accessing the endpoints. Click the green Authorize button on top right and enter username and password
 
-**The application is ready to test!**
-
-*Note*: Use preexisting **commodity id 15** to get started with the testing of the application right away. 
+For admin user, username is admin and password is admin
+For general user, username is mithilbhoras and password is mithil
