@@ -15,6 +15,7 @@ jwt = "*"
 mysqlclient = "*"
 psycopg2 = "*"
 asyncpg = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
