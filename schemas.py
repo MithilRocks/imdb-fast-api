@@ -5,6 +5,14 @@ class MovieBase(BaseModel):
     name: str
     score: float
 
+    @validator('score')
+    def check_zero(cls, v):
+        if v <= 0:
+            raise ValueError(f'Score should be greater than 0')
+        elif v > 10:
+            raise ValueError(f'Score should be between 0 and 10')
+        return v
+
 
 class Director(BaseModel):
     id: int
@@ -26,6 +34,7 @@ class MovieCreate(MovieBase):
 
 class Movie(MovieBase):
     id: int
+    popularity: float
     director: Director
     genres: List[Genre] = []
     

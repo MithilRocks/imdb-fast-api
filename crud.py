@@ -9,7 +9,13 @@ async def get_user(username: str):
 async def get_director(id: int):
     return await database.fetch_one(query=models.directors.select().where(models.directors.c.id == id))
 
-async def get_genres(movie_id: int):
+async def get_directors(skip: int = 0, limit: int = 100):
+    return await database.fetch_all(query=models.directors.select().offset(skip).limit(limit))
+
+async def get_genres(skip: int = 0, limit: int = 100):
+    return await database.fetch_all(query=models.genres.select().offset(skip).limit(limit))
+
+async def get_movie_genres(movie_id: int):
     genres = await database.fetch_all(
         query=models.moviegenrerelation.select()
         .where(models.moviegenrerelation.c.movie_id == movie_id)
@@ -25,16 +31,16 @@ async def get_movie(id: int):
     if not movie:
         return {}
     director = await get_director(movie.director_id)
-    genres = await get_genres(movie.id)
-    return {"id":movie.id,"name":movie.name,"score":movie.score,"director":director, "genres":genres}
+    genres = await get_movie_genres(movie.id)
+    return {"id":movie.id,"name":movie.name,"score":movie.score,"popularity":movie.score*10,"director":director, "genres":genres}
 
 async def get_movie_by_name(name: str):
     movie = await database.fetch_one(query=models.movies.select().where(models.movies.c.name == name))
     if not movie:
         return {}
     director = await get_director(movie.director_id)
-    genres = await get_genres(movie.id)
-    return {"id":movie.id,"name":movie.name,"score":movie.score,"director":director, "genres":genres}
+    genres = await get_movie_genres(movie.id)
+    return {"id":movie.id,"name":movie.name,"score":movie.score,"popularity":movie.score*10,"director":director, "genres":genres}
 
 async def get_movies(skip: int = 0, limit: int = 100):
     return await database.fetch_all(query=models.movies.select().offset(skip).limit(limit))

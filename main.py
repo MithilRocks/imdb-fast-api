@@ -38,32 +38,46 @@ async def get_current_username(credentials: HTTPBasicCredentials = Depends(secur
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return credentials.username
+    return user.is_admin
 
-@app.get("/movie/{movie_id}")
-async def read_movie(movie_id: int):
+@app.get("/movie/{movie_id}", tags=['Main Task Endpoints'], response_model=schemas.Movie)
+async def read_movie(movie_id: int, commons: dict = Depends(get_current_username)):
     db_movie = await crud.get_movie(id=movie_id)
-    if db_movie is None:
+    if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
     return db_movie
 
-@app.post("/movie/")
-async def create_movie(movie: schemas.MovieCreate):
+@app.post("/movie/", tags=['Main Task Endpoints'], response_model=schemas.MovieCreate)
+async def create_movie(movie: schemas.MovieCreate, commons: dict = Depends(get_current_username)):
+    if not commons:
+        raise HTTPException(status_code=401, detail="Access denied")
     db_movie = await crud.get_movie_by_name(name=movie.name)
     if db_movie:
         raise HTTPException(status_code=400, detail="Movie already exists")
     return await crud.create_movie(movie=movie)
 
-@app.put("/movie/", response_model=schemas.MovieUpdateFinal, response_model_exclude_unset=True, dependencies=[Depends(get_current_username)])
-async def update_movie(movie: schemas.MovieUpdateFinal):
+@app.put("/movie/", response_model=schemas.MovieUpdateFinal, response_model_exclude_unset=True, tags=['Main Task Endpoints'])
+async def update_movie(movie: schemas.MovieUpdateFinal, commons: dict = Depends(get_current_username)):
+    if not commons:
+        raise HTTPException(status_code=401, detail="Access denied")
     db_movie = await crud.get_movie(id=movie.id)
-    if db_movie is None:
+    if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
     return await crud.update_movie(movie=movie)
 
-@app.delete("/movie/{movie_id}")
-async def delete_movie(movie_id: int):
+@app.delete("/movie/{movie_id}", tags=['Main Task Endpoints'])
+async def delete_movie(movie_id: int, commons: dict = Depends(get_current_username)):
+    if not commons:
+        raise HTTPException(status_code=401, detail="Access denied")
     db_movie = await crud.get_movie(id=movie_id)
-    if db_movie is None:
+    if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
     return await crud.delete_movie(movie_id=movie_id)
+
+@app.get("/directors/", response_model=List[schemas.Director], tags=['Get other info'])
+async def get_directors(skip: int = 0, limit: int = 100):
+    return await crud.get_directors(skip=skip, limit=limit)
+
+@app.get("/genres/", response_model=List[schemas.Genre], tags=['Get other info'])
+async def get_directors(skip: int = 0, limit: int = 100):
+    return await crud.get_genres(skip=skip, limit=limit)
