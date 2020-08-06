@@ -16,6 +16,7 @@ mysqlclient = "*"
 psycopg2 = "*"
 asyncpg = "*"
 gunicorn = "*"
+uvloop = "*"
 
 [requires]
 python_version = "3.7"
