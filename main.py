@@ -23,21 +23,6 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-@app.get("/movie/{movie_id}", response_model=schemas.Movie)
-async def read_movie(movie_id: int):
-    db_movie = await crud.get_movie(id=movie_id)
-    if db_movie is None:
-        raise HTTPException(status_code=404, detail="Movie not found")
-    return db_movie
-
-@app.post("/movies/")
-async def create_movie(movie: schemas.MovieCreate):
-    db_movie = await crud.get_movie_by_name(name=movie.name)
-    if db_movie:
-        raise HTTPException(status_code=400, detail="Movie already exists")
-    return await crud.create_movie(movie=movie)
-
-""" 
 # sample hashing
 def fake_hash_password(password: str):
     return "hashed" + password
@@ -55,18 +40,30 @@ async def get_current_username(credentials: HTTPBasicCredentials = Depends(secur
         )
     return credentials.username
 
-# including elements router
-app.include_router(
-    elements.router,
-    prefix="/element",
-    responses={404: {"description":"api not found"}},
-    dependencies=[Depends(get_current_username)]
-)
+@app.get("/movie/{movie_id}")
+async def read_movie(movie_id: int):
+    db_movie = await crud.get_movie(id=movie_id)
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return db_movie
 
-# including commodities router
-app.include_router(
-    commodities.router,
-    prefix="/commodity",
-    responses={404: {"description":"api not found"}},
-    dependencies=[Depends(get_current_username)]
-) """
+@app.post("/movie/")
+async def create_movie(movie: schemas.MovieCreate):
+    db_movie = await crud.get_movie_by_name(name=movie.name)
+    if db_movie:
+        raise HTTPException(status_code=400, detail="Movie already exists")
+    return await crud.create_movie(movie=movie)
+
+@app.put("/movie/", response_model=schemas.MovieUpdateFinal, response_model_exclude_unset=True, dependencies=[Depends(get_current_username)])
+async def update_movie(movie: schemas.MovieUpdateFinal):
+    db_movie = await crud.get_movie(id=movie.id)
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return await crud.update_movie(movie=movie)
+
+@app.delete("/movie/{movie_id}")
+async def delete_movie(movie_id: int):
+    db_movie = await crud.get_movie(id=movie_id)
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return await crud.delete_movie(movie_id=movie_id)

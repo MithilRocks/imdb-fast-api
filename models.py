@@ -15,8 +15,7 @@ class Movie(Base):
     genres = relationship(
         'Genre',
         secondary='moviegenrerelation',
-        backref='movies',
-        cascade='all, delete-orphan'
+        backref='movies'
     )
     
 class Genre(Base):
@@ -36,7 +35,7 @@ class Director(Base):
 
 class Moviegenrerelation(Base):
     __tablename__ = "moviegenrerelation"
-    movie_id = Column(Integer, ForeignKey("movies.id"), primary_key=True)
+    movie_id = Column(Integer, ForeignKey("movies.id", ondelete='CASCADE'), primary_key=True)
     genre_id = Column(Integer, ForeignKey("genres.id"), primary_key=True)
     
 class User(Base):
