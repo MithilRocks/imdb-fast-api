@@ -81,7 +81,3 @@ async def get_directors(skip: int = 0, limit: int = 100):
 @app.get("/genres/", response_model=List[schemas.Genre], tags=['Get other info'])
 async def get_directors(skip: int = 0, limit: int = 100):
     return await crud.get_genres(skip=skip, limit=limit)
-
-@app.post("/bulkmovies/")
-async def bulk_movies(movies: List[schemas.BulkMovies]):
-    return await crud.bulk_update_movies(movies=movies)
