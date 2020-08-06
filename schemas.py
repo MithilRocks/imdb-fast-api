@@ -52,3 +52,9 @@ class MovieUpdateFinal(MovieUpdate):
 
     class Config:
         orm_mode = True
+
+class BulkMovies(BaseModel):
+    director: str
+    genre: List[str]
+    imdb_score: float
+    name: str

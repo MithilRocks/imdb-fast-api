@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from database import database
 import models, schemas
 import copy
+from typing import List
 
 async def get_user(username: str):
     return await database.fetch_one(query=models.users.select().where(models.users.c.username == username))
@@ -64,3 +65,25 @@ async def update_movie(movie: schemas.MovieUpdateFinal):
         del(movie.genres_id)
     await database.execute(models.movies.update().values(**movie.dict(exclude_unset=True)).where(models.movies.c.id == movie.id))
     return {**movie_temp.dict(exclude_unset=True)}
+
+async def bulk_update_movies(movies: List[schemas.BulkMovies]):
+    for movie in movies:
+        genres = []
+        for genre in movie.genre:
+            result = await database.fetch_one(query=models.genres.select().where(models.genres.c.name == genre))
+            if result:
+                genres.append(result.id)
+            else:
+                genre_c = models.genres.insert().values({"name":genre})
+                pk = await database.execute(genre_c) 
+                genres.append(pk)
+        
+        result_d = await database.fetch_one(query=models.directors.select().where(models.directors.c.name == movie.director))
+        if result_d:
+            director_id = result_d.id
+        else:
+            director_c = models.directors.insert().values({"name":movie.director})
+            pk = await database.execute(director_c) 
+            director_id = pk
+        new_movie = schemas.MovieCreate(name=movie.name, score=movie.imdb_score, director_id=director_id, genres_id=genres)
+        await create_movie(new_movie)
